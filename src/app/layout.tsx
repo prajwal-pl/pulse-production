@@ -10,6 +10,7 @@ const font = DM_Sans({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Pulse",
   description: "Automate your work with Pulse",
+  icons: ["/fuzzieLogo.png"],
 };
 
 export default function RootLayout({

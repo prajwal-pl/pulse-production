@@ -24,7 +24,7 @@ const Workflow = ({ name, description, id, publish }: Props) => {
         <Link href={`/workflows/editor/${id}`}>
           <div className="flex flex-row gap-2">
             <Image
-              src="/googleDrive .png"
+              src="/googleDrive.png"
               alt="Google Drive"
               height={30}
               width={30}
