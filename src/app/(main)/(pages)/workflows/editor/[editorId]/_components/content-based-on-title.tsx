@@ -18,6 +18,9 @@ import { Input } from "@/components/ui/input";
 // import { getFileMetaData } from '@/app/(main)/(pages)/connections/_actions/google-connection'
 // import axios from 'axios'
 import { toast } from "sonner";
+import GoogleDriveFiles from "./google-drive-files";
+import ActionButton from "./action-button";
+import GoogleFileDetails from "./google-file-details";
 
 export interface Option {
   value: string;
@@ -76,16 +79,15 @@ const ContentBasedOnTitle = ({
     title === "Google Drive"
       ? !nodeConnection.isLoading
       : !!nodeConnectionType[
-          `${
-            title === "Slack"
-              ? "slackAccessToken"
-              : title === "Discord"
-              ? "webhookURL"
-              : title === "Notion"
-              ? "accessToken"
-              : ""
-          }`
-        ];
+      `${title === "Slack"
+        ? "slackAccessToken"
+        : title === "Discord"
+          ? "webhookURL"
+          : title === "Notion"
+            ? "accessToken"
+            : ""
+      }`
+      ];
 
   if (!isConnected) return <p>Not connected</p>;
 
@@ -104,10 +106,10 @@ const ContentBasedOnTitle = ({
           <Input
             type="text"
             value={nodeConnectionType.content}
-            // onChange={(event) => onContentChange(nodeConnection, title, event)}
+          // onChange={(event) => onContentChange(nodeConnection, title, event)}
           />
 
-          {/* {JSON.stringify(file) !== '{}' && title !== 'Google Drive' && (
+          {JSON.stringify(file) !== '{}' && title !== 'Google Drive' && (
             <Card className="w-full">
               <CardContent className="px-2 py-3">
                 <div className="flex flex-col gap-4">
@@ -129,7 +131,7 @@ const ContentBasedOnTitle = ({
             nodeConnection={nodeConnection}
             channels={selectedSlackChannels}
             setChannels={setSelectedSlackChannels}
-          /> */}
+          />
         </div>
       </Card>
     </AccordionContent>

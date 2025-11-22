@@ -28,7 +28,7 @@ import {
 import RenderConnectionAccordion from "./render-connection-accordian";
 import RenderOutputAccordion from "./render-output-accordion";
 import { usePulseStore } from "@/store";
-import { onDragStart } from "@/lib/editor-utils";
+import { fetchBotSlackChannels, onConnections, onDragStart } from "@/lib/editor-utils";
 
 type Props = {
   nodes: EditorNodeType[];
@@ -37,21 +37,21 @@ type Props = {
 const EditorCanvasSidebar = ({ nodes }: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
-  //   const { googleFile, setSlackChannels } = uswPulseStore()
-  //   useEffect(() => {
-  //     if (state) {
-  //       onConnections(nodeConnection, state, googleFile)
-  //     }
-  //   }, [state])
+  const { googleFile, setSlackChannels } = usePulseStore()
+  useEffect(() => {
+    if (state) {
+      onConnections(nodeConnection, state, googleFile)
+    }
+  }, [state])
 
-  //   useEffect(() => {
-  //     if (nodeConnection.slackNode.slackAccessToken) {
-  //       fetchBotSlackChannels(
-  //         nodeConnection.slackNode.slackAccessToken,
-  //         setSlackChannels
-  //       )
-  //     }
-  //   }, [nodeConnection])
+  useEffect(() => {
+    if (nodeConnection.slackNode.slackAccessToken) {
+      fetchBotSlackChannels(
+        nodeConnection.slackNode.slackAccessToken,
+        setSlackChannels
+      )
+    }
+  }, [nodeConnection])
 
   return (
     <aside>
