@@ -2,7 +2,7 @@
 import React from "react";
 import { useModal } from "../providers/modal-provider";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { WorkflowFormSchema } from "@/lib/types";
@@ -33,6 +33,8 @@ type Props = {
 
 const WorkFlowForm = ({ title, subTitle }: Props) => {
   const { setClose } = useModal();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof WorkflowFormSchema>>({
     mode: "onChange",
     resolver: zodResolver(WorkflowFormSchema),
@@ -42,16 +44,19 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
     },
   });
 
+  const isLoading = form.formState.isSubmitting;
+
   const handleSubmit = async (values: z.infer<typeof WorkflowFormSchema>) => {
-    const workflow = await onCreateWorkflow(values.name, values.description)
+    const workflow = await onCreateWorkflow(values.name, values.description);
     if (workflow) {
-      toast.message(workflow.message)
-      router.refresh()
+      toast.message(workflow.message);
     }
-    setClose()
-  }
-  const isLoading = form.formState.isLoading;
-  const router = useRouter();
+    setClose();
+    // Refresh after a short delay to avoid stream conflicts
+    setTimeout(() => {
+      router.refresh();
+    }, 100);
+  };
   return (
     <Card className="w-full max-w-[650px] border-none">
       {title && subTitle && (
