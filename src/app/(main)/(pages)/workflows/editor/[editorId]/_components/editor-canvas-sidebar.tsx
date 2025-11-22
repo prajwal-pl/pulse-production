@@ -13,11 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import {
-//   fetchBotSlackChannels,
-//   onConnections,
-//   onDragStart,
-// } from '@/lib/editor-utils'
 import EditorCanvasIconHelper from "./editor-canvas-card-icon-hepler";
 import {
   Accordion,
