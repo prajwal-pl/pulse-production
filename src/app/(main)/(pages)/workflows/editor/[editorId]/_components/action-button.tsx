@@ -25,18 +25,33 @@ const ActionButton = ({
   const pathname = usePathname();
 
   const onSendDiscordMessage = useCallback(async () => {
-    const response = await postContentToWebHook(
-      nodeConnection.discordNode.content,
-      nodeConnection.discordNode.webhookURL
-    );
+    console.log("Sending Discord message:", {
+      content: nodeConnection.discordNode.content,
+      webhookURL: nodeConnection.discordNode.webhookURL,
+    });
 
-    if (response.message == "success") {
-      nodeConnection.setDiscordNode((prev: any) => ({
-        ...prev,
-        content: "",
-      }));
+    try {
+      const response = await postContentToWebHook(
+        nodeConnection.discordNode.content,
+        nodeConnection.discordNode.webhookURL
+      );
+
+      console.log("Discord response:", response);
+
+      if (response.message == "success") {
+        toast.success("Message sent to Discord!");
+        nodeConnection.setDiscordNode((prev: any) => ({
+          ...prev,
+          content: "",
+        }));
+      } else {
+        toast.error(response.message || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Discord error:", error);
+      toast.error("Failed to send message to Discord");
     }
-  }, [nodeConnection.discordNode]);
+  }, [nodeConnection.discordNode, nodeConnection.setDiscordNode]);
 
   const onStoreNotionContent = useCallback(async () => {
     console.log(
@@ -50,12 +65,13 @@ const ActionButton = ({
       nodeConnection.notionNode.content
     );
     if (response) {
+      toast.success("Content stored in Notion!");
       nodeConnection.setNotionNode((prev: any) => ({
         ...prev,
         content: "",
       }));
     }
-  }, [nodeConnection.notionNode]);
+  }, [nodeConnection.notionNode, nodeConnection.setNotionNode]);
 
   const onStoreSlackContent = useCallback(async () => {
     const response = await postMessageToSlack(
@@ -73,7 +89,7 @@ const ActionButton = ({
     } else {
       toast.error(response.message);
     }
-  }, [nodeConnection.slackNode, channels]);
+  }, [nodeConnection.slackNode, nodeConnection.setSlackNode, channels, setChannels]);
 
   const onCreateLocalNodeTempate = useCallback(async () => {
     if (currentService === "Discord") {
@@ -115,7 +131,7 @@ const ActionButton = ({
         toast.message(response);
       }
     }
-  }, [nodeConnection, channels]);
+  }, [nodeConnection, channels, currentService, pathname]);
 
   const renderActionButton = () => {
     switch (currentService) {

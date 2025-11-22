@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import GoogleDriveFiles from "./google-drive-files";
 import ActionButton from "./action-button";
 import GoogleFileDetails from "./google-file-details";
+import axios from "axios";
+import { onContentChange } from "@/lib/editor-utils";
 
 export interface Option {
   value: string;
@@ -55,21 +57,21 @@ const ContentBasedOnTitle = ({
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
 
-  //   useEffect(() => {
-  //     const reqGoogle = async () => {
-  //       const response: { data: { message: { files: any } } } = await axios.get(
-  //         '/api/drive'
-  //       )
-  //       if (response) {
-  //         console.log(response.data.message.files[0])
-  //         toast.message("Fetched File")
-  //         setFile(response.data.message.files[0])
-  //       } else {
-  //         toast.error('Something went wrong')
-  //       }
+  // useEffect(() => {
+  //   const reqGoogle = async () => {
+  //     const response: { data: { message: { files: any } } } = await axios.get(
+  //       '/api/drive'
+  //     )
+  //     if (response) {
+  //       console.log(response.data.message.files[0])
+  //       toast.message("Fetched File")
+  //       setFile(response.data.message.files[0])
+  //     } else {
+  //       toast.error('Something went wrong')
   //     }
-  //     reqGoogle()
-  //   }, [])
+  //   }
+  //   reqGoogle()
+  // }, [])
 
   // @ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
@@ -106,7 +108,7 @@ const ContentBasedOnTitle = ({
           <Input
             type="text"
             value={nodeConnectionType.content}
-          // onChange={(event) => onContentChange(nodeConnection, title, event)}
+            onChange={(event) => onContentChange(nodeConnection, title, event)}
           />
 
           {JSON.stringify(file) !== '{}' && title !== 'Google Drive' && (
