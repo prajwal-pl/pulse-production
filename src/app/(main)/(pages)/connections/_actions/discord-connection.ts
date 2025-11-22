@@ -112,7 +112,7 @@ export const getDiscordConnectionUrl = async () => {
 export const postContentToWebHook = async (content: string, url: string) => {
   console.log("Webhook content:", content);
   console.log("Webhook URL:", url);
-  
+
   if (content === "") {
     return { message: "String empty" };
   }
@@ -120,15 +120,15 @@ export const postContentToWebHook = async (content: string, url: string) => {
   try {
     const posted = await axios.post(url, { content });
     console.log("Discord API response:", posted.status, posted.statusText);
-    
+
     if (posted.status === 200 || posted.status === 204) {
       return { message: "success" };
     }
     return { message: `Failed with status: ${posted.status}` };
   } catch (error: any) {
     console.error("Discord webhook error:", error.response?.data || error.message);
-    return { 
-      message: error.response?.data?.message || error.message || "Failed to send message" 
+    return {
+      message: error.response?.data?.message || error.message || "Failed to send message"
     };
   }
 };
