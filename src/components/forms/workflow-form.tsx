@@ -24,6 +24,8 @@ import {
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
+import { onCreateWorkflow } from "@/app/(main)/(pages)/workflows/_actions/workflow-connections";
+import { toast } from "sonner";
 type Props = {
   title?: string;
   subTitle?: string;
@@ -40,9 +42,14 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
     },
   });
 
-  const handleSubmit = () => {
-    setClose();
-  };
+  const handleSubmit = async (values: z.infer<typeof WorkflowFormSchema>) => {
+    const workflow = await onCreateWorkflow(values.name, values.description)
+    if (workflow) {
+      toast.message(workflow.message)
+      router.refresh()
+    }
+    setClose()
+  }
   const isLoading = form.formState.isLoading;
   const router = useRouter();
   return (
