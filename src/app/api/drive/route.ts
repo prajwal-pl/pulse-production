@@ -33,7 +33,10 @@ export async function GET() {
     })
 
     try {
-        const response = await drive.files.list()
+        const response = await drive.files.list({
+            pageSize: 10,
+            fields: 'files(id, name, mimeType, kind, modifiedTime, size, webViewLink)',
+        })
 
         if (response) {
             return Response.json(

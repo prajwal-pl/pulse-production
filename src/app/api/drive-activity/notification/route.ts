@@ -7,13 +7,23 @@ import { headers } from 'next/headers'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
-    console.log('🔴 Changed')
     const headersList = await headers()
-    let channelResourceId
+    let channelResourceId: string | undefined
+    let resourceState: string | undefined
+    
     headersList.forEach((value, key) => {
-        if (key == 'x-goog-resource-id') {
+        if (key === 'x-goog-resource-id') {
             channelResourceId = value
         }
+        if (key === 'x-goog-resource-state') {
+            resourceState = value
+        }
+    })
+
+    console.log('📬 Drive Activity Notification:', {
+        resourceId: channelResourceId,
+        state: resourceState,
+        timestamp: new Date().toISOString()
     })
 
     if (channelResourceId) {

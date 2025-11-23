@@ -54,22 +54,40 @@ const ContentBasedOnTitle = ({
   const title = selectedNode.data.title
 
   useEffect(() => {
+    let isMounted = true;
+    
     const reqGoogle = async () => {
-      const response: { data: { message: { files: any } } } = await axios.get(
-        '/api/drive'
-      )
-      if (response) {
-        console.log(response.data.message.files[0])
-        toast.message("Fetched File")
-        setFile(response.data.message.files[0])
-      } else {
-        toast.error('Something went wrong')
+      // Only fetch once when component mounts with specific titles
+      if (!isMounted) return;
+      
+      try {
+        const response: { data: { message: { files: any[] } } } = await axios.get(
+          '/api/drive'
+        )
+        if (isMounted && response?.data?.message?.files && response.data.message.files.length > 0) {
+          const firstFile = response.data.message.files[0]
+          setFile(firstFile)
+          toast.success(`Loaded: ${firstFile.name || 'Untitled'}`)
+        } else if (isMounted) {
+          toast.error('No files found in Google Drive')
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error fetching Google Drive files:', error)
+          toast.error('Failed to fetch Google Drive files')
+        }
       }
     }
-    reqGoogle()
-  }, [])
-
-  // @ts-ignore
+    
+    // Only fetch for relevant node types and only once
+    if (title === 'Discord' || title === 'Notion' || title === 'Slack') {
+      reqGoogle()
+    }
+    
+    return () => {
+      isMounted = false;
+    }
+  }, [title])  // @ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]]
   if (!nodeConnectionType) return <p>Not connected</p>
 
