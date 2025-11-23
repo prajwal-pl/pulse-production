@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { ModeToggle } from "./mode-toggle";
-import { currentUser, UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
 
 const Navbar = async () => {
   const user = await currentUser()

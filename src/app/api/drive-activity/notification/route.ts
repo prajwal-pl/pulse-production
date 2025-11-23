@@ -8,7 +8,7 @@ import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
     console.log('🔴 Changed')
-    const headersList = headers()
+    const headersList = await headers()
     let channelResourceId
     headersList.forEach((value, key) => {
         if (key == 'x-goog-resource-id') {

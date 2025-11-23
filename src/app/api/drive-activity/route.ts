@@ -1,8 +1,9 @@
 import { google } from 'googleapis'
-import { auth, clerkClient } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '@/lib/db'
+import { clerkClient } from '@clerk/nextjs/server'
 
 export async function GET() {
     const oauth2Client = new google.auth.OAuth2(
@@ -11,7 +12,7 @@ export async function GET() {
         process.env.OAUTH2_REDIRECT_URI
     )
 
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
         return NextResponse.json({ message: 'User not found' })
     }

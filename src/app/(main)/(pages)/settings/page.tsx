@@ -2,7 +2,7 @@ import ProfileForm from "@/components/forms/profile-form";
 import React from "react";
 import ProfilePicture from "./_components/profile-picture";
 import { db } from "@/lib/db";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { ModeToggle } from "@/components/global/mode-toggle";
 
 type Props = {};
