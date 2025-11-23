@@ -175,6 +175,7 @@ const EditorCanvas = (props: Props) => {
       setIsWorkFlowLoading(false);
     }
     setIsWorkFlowLoading(false);
+    return response;
   };
 
   useEffect(() => {

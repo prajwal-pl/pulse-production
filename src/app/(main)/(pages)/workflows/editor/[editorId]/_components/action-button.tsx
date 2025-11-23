@@ -100,6 +100,11 @@ const ActionButton = ({
       );
 
       if (response) {
+        // Update the workflow template state so it persists when switching nodes
+        nodeConnection.setWorkFlowTemplate((prev: any) => ({
+          ...prev,
+          discord: nodeConnection.discordNode.content,
+        }));
         toast.message(response);
       }
     }
@@ -113,6 +118,11 @@ const ActionButton = ({
       );
 
       if (response) {
+        // Update the workflow template state so it persists when switching nodes
+        nodeConnection.setWorkFlowTemplate((prev: any) => ({
+          ...prev,
+          slack: nodeConnection.slackNode.content,
+        }));
         toast.message(response);
       }
     }
@@ -128,6 +138,11 @@ const ActionButton = ({
       );
 
       if (response) {
+        // Update the workflow template state so it persists when switching nodes
+        nodeConnection.setWorkFlowTemplate((prev: any) => ({
+          ...prev,
+          notion: JSON.stringify(nodeConnection.notionNode.content),
+        }));
         toast.message(response);
       }
     }

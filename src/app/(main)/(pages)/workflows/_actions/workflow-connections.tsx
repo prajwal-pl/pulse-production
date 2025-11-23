@@ -174,6 +174,9 @@ export const onGetNodesEdges = async (flowId: string) => {
     select: {
       nodes: true,
       edges: true,
+      discordTemplate: true,
+      slackTemplate: true,
+      notionTemplate: true,
     },
   });
   if (nodesEdges?.nodes && nodesEdges?.edges) return nodesEdges;

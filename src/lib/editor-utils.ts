@@ -96,7 +96,7 @@ export const onConnections = async (
     if (connection) {
       nodeConnection.setDiscordNode({
         webhookURL: connection.url,
-        content: "",
+        content: nodeConnection.workflowTemplate.discord || "",
         webhookName: connection.name,
         guildName: connection.guildName,
       });
@@ -109,11 +109,13 @@ export const onConnections = async (
         accessToken: connection.accessToken,
         databaseId: connection.databaseId,
         workspaceName: connection.workspaceName,
-        content: {
-          name: googleFile.name,
-          kind: googleFile.kind,
-          type: googleFile.mimeType,
-        },
+        content: nodeConnection.workflowTemplate.notion
+          ? JSON.parse(nodeConnection.workflowTemplate.notion)
+          : {
+              name: googleFile.name,
+              kind: googleFile.kind,
+              type: googleFile.mimeType,
+            },
       });
 
       if (nodeConnection.notionNode.databaseId !== "") {
@@ -136,7 +138,7 @@ export const onConnections = async (
         teamId: connection.teamId,
         teamName: connection.teamName,
         userId: connection.userId,
-        content: "",
+        content: nodeConnection.workflowTemplate.slack || "",
       });
     }
   }
