@@ -55,11 +55,11 @@ const ContentBasedOnTitle = ({
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const reqGoogle = async () => {
       // Only fetch once when component mounts with specific titles
       if (!isMounted) return;
-      
+
       try {
         const response: { data: { message: { files: any[] } } } = await axios.get(
           '/api/drive'
@@ -78,12 +78,12 @@ const ContentBasedOnTitle = ({
         }
       }
     }
-    
+
     // Only fetch for relevant node types and only once
     if (title === 'Discord' || title === 'Notion' || title === 'Slack') {
       reqGoogle()
     }
-    
+
     return () => {
       isMounted = false;
     }

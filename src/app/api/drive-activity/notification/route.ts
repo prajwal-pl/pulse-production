@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const headersList = await headers()
     let channelResourceId: string | undefined
     let resourceState: string | undefined
-    
+
     headersList.forEach((value, key) => {
         if (key === 'x-goog-resource-id') {
             channelResourceId = value
