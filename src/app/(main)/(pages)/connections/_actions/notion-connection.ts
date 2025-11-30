@@ -78,28 +78,49 @@ export const onCreateNewPageInDatabase = async (
   databaseId: string,
   accessToken: string,
   content: string
-) => {
+): Promise<{ success: boolean; message: string; response?: any }> => {
+  if (!databaseId || !accessToken) {
+    return { success: false, message: "Missing database ID or access token" };
+  }
+
+  if (!content || content.trim() === "") {
+    content = "Untitled";
+  }
+
   const notion = new Client({
     auth: accessToken,
   });
 
-  console.log(databaseId);
-  const response = await notion.pages.create({
-    parent: {
-      type: "database_id",
-      database_id: databaseId,
-    },
-    properties: {
-      name: [
-        {
-          text: {
-            content: content,
-          },
+  console.log("Creating Notion page in database:", databaseId);
+  console.log("Content:", content);
+
+  try {
+    const response = await notion.pages.create({
+      parent: {
+        type: "database_id",
+        database_id: databaseId,
+      },
+      properties: {
+        name: {
+          title: [
+            {
+              text: {
+                content: content,
+              },
+            },
+          ],
         },
-      ],
-    },
-  });
-  if (response) {
-    return response;
+      },
+    });
+
+    if (response) {
+      console.log("Notion page created successfully:", response.id);
+      return { success: true, message: "Page created", response };
+    }
+
+    return { success: false, message: "No response from Notion" };
+  } catch (error: any) {
+    console.error("Notion API error:", error.message);
+    throw error; // Re-throw to be handled by caller
   }
 };

@@ -85,9 +85,9 @@ const postMessageInSlackChannel = async (
   slackAccessToken: string,
   slackChannel: string,
   content: string
-): Promise<void> => {
+): Promise<{ success: boolean; channel: string; error?: string }> => {
   try {
-    await axios.post(
+    const response = await axios.post(
       "https://slack.com/api/chat.postMessage",
       { channel: slackChannel, text: content },
       {
@@ -97,12 +97,21 @@ const postMessageInSlackChannel = async (
         },
       }
     );
-    console.log(`Message posted successfully to channel ID: ${slackChannel}`);
+
+    // Slack API returns ok: true/false in response body
+    if (response.data?.ok) {
+      console.log(`Message posted successfully to channel ID: ${slackChannel}`);
+      return { success: true, channel: slackChannel };
+    } else {
+      console.error(`Slack API error for channel ${slackChannel}:`, response.data?.error);
+      return { success: false, channel: slackChannel, error: response.data?.error };
+    }
   } catch (error: any) {
     console.error(
       `Error posting message to Slack channel ${slackChannel}:`,
       error?.response?.data || error.message
     );
+    return { success: false, channel: slackChannel, error: error.message };
   }
 };
 
@@ -112,19 +121,48 @@ export const postMessageToSlack = async (
   selectedSlackChannels: Option[],
   content: string
 ): Promise<{ message: string }> => {
-  if (!content) return { message: "Content is empty" };
-  if (!selectedSlackChannels?.length)
+  if (!content || content.trim() === "") {
+    return { message: "Content is empty" };
+  }
+  if (!selectedSlackChannels?.length) {
     return { message: "Channel not selected" };
-
-  try {
-    selectedSlackChannels
-      .map((channel) => channel?.value)
-      .forEach((channel) => {
-        postMessageInSlackChannel(slackAccessToken, channel, content);
-      });
-  } catch (error) {
-    return { message: "Message could not be sent to Slack" };
+  }
+  if (!slackAccessToken) {
+    return { message: "Slack access token missing" };
   }
 
-  return { message: "Success" };
+  try {
+    // Get all valid channel values
+    const channelValues = selectedSlackChannels
+      .map((channel) => channel?.value)
+      .filter((value): value is string => Boolean(value));
+
+    if (channelValues.length === 0) {
+      return { message: "No valid channels to send to" };
+    }
+
+    // Use Promise.all to properly await all messages
+    const results = await Promise.all(
+      channelValues.map((channel) =>
+        postMessageInSlackChannel(slackAccessToken, channel, content)
+      )
+    );
+
+    const successCount = results.filter((r) => r.success).length;
+    const failedCount = results.filter((r) => !r.success).length;
+
+    if (successCount === 0) {
+      const errors = results.map((r) => r.error).filter(Boolean).join(", ");
+      return { message: `Failed to send: ${errors}` };
+    }
+
+    if (failedCount > 0) {
+      return { message: `Partial success: ${successCount}/${results.length} channels` };
+    }
+
+    return { message: "Success" };
+  } catch (error: any) {
+    console.error("Error in postMessageToSlack:", error.message);
+    return { message: "Message could not be sent to Slack" };
+  }
 };
