@@ -4,7 +4,8 @@ import Stripe from 'stripe'
 export async function GET(req: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET!, {
         typescript: true,
-        apiVersion: '2025-11-17.clover',
+        apiVersion: '2025-12-15.clover',
+
     })
 
     const products = await stripe.prices.list({
@@ -17,7 +18,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET!, {
         typescript: true,
-        apiVersion: '2025-11-17.clover',
+        apiVersion: '2025-12-15.clover',
+
     })
     const data = await req.json()
     const session = await stripe.checkout.sessions.create({
