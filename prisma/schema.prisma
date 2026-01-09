@@ -92,7 +92,7 @@ model Notion {
 
 model Connections {
   id               String          @id @default(uuid())
-  type             String          @unique
+  type             String
   DiscordWebhook   DiscordWebhook? @relation(fields: [discordWebhookId], references: [id])
   discordWebhookId String?
   Notion           Notion?         @relation(fields: [notionId], references: [id])
@@ -101,6 +101,8 @@ model Connections {
   userId           String?
   Slack            Slack?          @relation(fields: [slackId], references: [id])
   slackId          String?
+
+  @@unique([type, userId])
 }
 
 model Workflows {
