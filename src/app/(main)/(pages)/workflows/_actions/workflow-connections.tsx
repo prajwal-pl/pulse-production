@@ -152,12 +152,20 @@ export const onCreateWorkflow = async (name: string, description: string) => {
   const user = await currentUser();
 
   if (user) {
+    // Validate required fields
+    if (!name || name.trim() === "") {
+      return { message: "Workflow name is required" };
+    }
+    
+    // Use empty string as fallback for description if not provided
+    const workflowDescription = description || "";
+    
     //create new workflow
     const workflow = await db.workflows.create({
       data: {
         userId: user.id,
-        name,
-        description,
+        name: name.trim(),
+        description: workflowDescription,
       },
     });
 

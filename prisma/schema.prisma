@@ -120,7 +120,7 @@ model Workflows {
   flowPath          String?
   cronPath          String?
   publish           Boolean? @default(false)
-  description       String
+  description       String   @default("")
   User              User     @relation(fields: [userId], references: [clerkId])
   userId            String
 }
