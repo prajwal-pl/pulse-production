@@ -156,10 +156,10 @@ export const onCreateWorkflow = async (name: string, description: string) => {
     if (!name || name.trim() === "") {
       return { message: "Workflow name is required" };
     }
-    
+
     // Use empty string as fallback for description if not provided
     const workflowDescription = description || "";
-    
+
     //create new workflow
     const workflow = await db.workflows.create({
       data: {
