@@ -49,7 +49,7 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
   const handleSubmit = async (values: z.infer<typeof WorkflowFormSchema>) => {
     console.log("Form values being submitted:", values);
     console.log("Name:", values.name, "Description:", values.description);
-    
+
     try {
       const workflow = await onCreateWorkflow(values.name, values.description);
       if (workflow) {
