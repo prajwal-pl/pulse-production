@@ -149,28 +149,42 @@ export const onGetWorkflows = async () => {
 };
 
 export const onCreateWorkflow = async (name: string, description: string) => {
-  const user = await currentUser();
+  console.log("onCreateWorkflow called with:", { name, description });
+  
+  try {
+    const user = await currentUser();
 
-  if (user) {
-    // Validate required fields
-    if (!name || name.trim() === "") {
-      return { message: "Workflow name is required" };
+    if (!user) {
+      console.log("No user found");
+      return { message: "User not authenticated" };
     }
 
-    // Use empty string as fallback for description if not provided
-    const workflowDescription = description || "";
+    // Validate required fields - be extra defensive
+    const workflowName = typeof name === 'string' ? name.trim() : "";
+    const workflowDescription = typeof description === 'string' ? description.trim() : "";
+
+    console.log("Processed values:", { workflowName, workflowDescription });
+
+    if (!workflowName) {
+      console.log("Workflow name is empty after processing");
+      return { message: "Workflow name is required" };
+    }
 
     //create new workflow
     const workflow = await db.workflows.create({
       data: {
         userId: user.id,
-        name: name.trim(),
+        name: workflowName,
         description: workflowDescription,
       },
     });
 
+    console.log("Workflow created:", workflow.id);
     if (workflow) return { message: "workflow created" };
     return { message: "Oops! try again" };
+  } catch (error) {
+    console.error("Error creating workflow:", error);
+    return { message: "Failed to create workflow" };
   }
 };
 

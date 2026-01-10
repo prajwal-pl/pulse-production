@@ -47,15 +47,22 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
   const isLoading = form.formState.isSubmitting;
 
   const handleSubmit = async (values: z.infer<typeof WorkflowFormSchema>) => {
-    const workflow = await onCreateWorkflow(values.name, values.description);
-    if (workflow) {
-      toast.message(workflow.message);
+    console.log("Form values being submitted:", values);
+    console.log("Name:", values.name, "Description:", values.description);
+    
+    try {
+      const workflow = await onCreateWorkflow(values.name, values.description);
+      if (workflow) {
+        toast.message(workflow.message);
+        if (workflow.message === "workflow created") {
+          setClose();
+          router.refresh();
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to create workflow");
     }
-    setClose();
-    // Refresh after a short delay to avoid stream conflicts
-    setTimeout(() => {
-      router.refresh();
-    }, 100);
   };
   return (
     <Card className="w-full max-w-[650px] border-none">
