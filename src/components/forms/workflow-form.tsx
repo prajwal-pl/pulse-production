@@ -1,11 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useModal } from "../providers/modal-provider";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { WorkflowFormSchema } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -13,19 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { onCreateWorkflow } from "@/app/(main)/(pages)/workflows/_actions/workflow-connections";
 import { toast } from "sonner";
+
 type Props = {
   title?: string;
   subTitle?: string;
@@ -34,24 +24,25 @@ type Props = {
 const WorkFlowForm = ({ title, subTitle }: Props) => {
   const { setClose } = useModal();
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof WorkflowFormSchema>>({
-    mode: "onChange",
-    resolver: zodResolver(WorkflowFormSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-    },
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const isLoading = form.formState.isSubmitting;
+    console.log("Submitting with name:", name, "description:", description);
 
-  const handleSubmit = async (values: z.infer<typeof WorkflowFormSchema>) => {
-    console.log("Form values being submitted:", values);
-    console.log("Name:", values.name, "Description:", values.description);
+    if (!name.trim()) {
+      toast.error("Workflow name is required");
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      const workflow = await onCreateWorkflow(values.name, values.description);
+      const workflow = await onCreateWorkflow(name.trim(), description.trim());
+      console.log("Server response:", workflow);
+
       if (workflow) {
         toast.message(workflow.message);
         if (workflow.message === "workflow created") {
@@ -62,8 +53,11 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to create workflow");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   return (
     <Card className="w-full max-w-[650px] border-none">
       {title && subTitle && (
@@ -73,50 +67,37 @@ const WorkFlowForm = ({ title, subTitle }: Props) => {
         </CardHeader>
       )}
       <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="flex flex-col gap-4 text-left"
-          >
-            <FormField
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               disabled={isLoading}
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
-            <FormField
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               disabled={isLoading}
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Description" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
-            <Button className="mt-4" disabled={isLoading} type="submit">
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving
-                </>
-              ) : (
-                "Save Settings"
-              )}
-            </Button>
-          </form>
-        </Form>
+          </div>
+          <Button className="mt-4" disabled={isLoading} type="submit">
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving
+              </>
+            ) : (
+              "Save Settings"
+            )}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );
